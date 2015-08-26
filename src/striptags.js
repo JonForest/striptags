@@ -109,8 +109,8 @@ function striptags(html, allowableTags) {
                     if (inQuote == c) {
                         // end quote found
                         inQuote = false;
-                    } else {
-                        // start quote
+                    } else if (! inQuote) {
+                        // start quote only if not already in one
                         inQuote = c;
                     }
                 }
@@ -180,33 +180,33 @@ function striptags(html, allowableTags) {
             i, length, c;
 
         normalizeTagBuffer:
-        for (i = 0, length = tagBuffer.length; i < length; i++) {
-            c = tagBuffer[i].toLowerCase();
+            for (i = 0, length = tagBuffer.length; i < length; i++) {
+                c = tagBuffer[i].toLowerCase();
 
-            switch (c) {
-                case '<': {
-                    break;
-                }
+                switch (c) {
+                    case '<': {
+                        break;
+                    }
 
-                case '>': {
-                    break normalizeTagBuffer;
-                }
-
-                case '/': {
-                    nonWhitespaceSeen = true;
-                    break;
-                }
-
-                default: {
-                    if (!c.match(WHITESPACE)) {
-                        nonWhitespaceSeen = true;
-                        normalized += c;
-                    } else if (nonWhitespaceSeen) {
+                    case '>': {
                         break normalizeTagBuffer;
+                    }
+
+                    case '/': {
+                        nonWhitespaceSeen = true;
+                        break;
+                    }
+
+                    default: {
+                        if (!c.match(WHITESPACE)) {
+                            nonWhitespaceSeen = true;
+                            normalized += c;
+                        } else if (nonWhitespaceSeen) {
+                            break normalizeTagBuffer;
+                        }
                     }
                 }
             }
-        }
 
         if (allowableTags.indexOf(normalized) !== -1) {
             output += tagBuffer;
